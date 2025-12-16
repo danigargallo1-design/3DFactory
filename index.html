@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
+    /* RESET Y BASE */
     * {
       margin: 0;
       padding: 0;
@@ -16,12 +17,17 @@
       font-family: 'Roboto', sans-serif;
       scroll-behavior: smooth;
     }
-
     body {
       background: #121212;
       color: #EEE;
     }
+    a, button {
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+    }
 
+    /* HEADER */
     header {
       position: sticky;
       top: 0;
@@ -34,132 +40,173 @@
       backdrop-filter: blur(8px);
       border-bottom: 1px solid #222;
     }
-
     header h1 {
       font-size: 20px;
       font-weight: 700;
     }
-
     nav a {
       color: #ccc;
       margin-left: 20px;
-      text-decoration: none;
       font-size: 14px;
       transition: color 0.25s ease;
     }
-
     nav a:hover {
       color: #fff;
     }
 
-    .hero {
-      min-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 60px 40px;
-      background: #121212;
-    }
+    /* HERO */
+.hero {
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 40px;
+  background: linear-gradient(to bottom, #0D47A1 0%, #1565C0 60%, #121212 100%);
+  color: #fff;
+  position: relative;
+}
 
-    .hero h2 {
-      font-size: 42px;
-      max-width: 800px;
-      margin-bottom: 20px;
-      font-weight: 700;
-    }
+.hero h2 {
+  font-size: 42px;
+  max-width: 800px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
 
-    .hero p {
-      font-size: 18px;
-      color: #aaa;
-      max-width: 600px;
-      margin-bottom: 40px;
-      font-weight: 400;
-    }
+.hero p {
+  font-size: 18px;
+  color: #aaa;
+  max-width: 600px;
+  margin-bottom: 40px;
+  font-weight: 400;
+}
 
-    .hero-buttons {
-      display: flex;
-      gap: 20px;
-    }
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
 
-    .btn {
-      padding: 14px 28px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 500;
-      transition: all 0.25s ease;
-      text-decoration: none;
-      display: inline-block;
-    }
+/* Mantener tus estilos de botones ya definidos */
+.btn {
+  padding: 14px 28px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  display: inline-block;
+}
 
-    /* Botones primarios (azul cromático) */
-    .btn-primary {
-      background: linear-gradient(135deg, #0D47A1, #1565C0, #42A5F5);
-      color: #fff;
-      transition: all 0.4s ease;
-    }
+.btn-primary {
+  background: linear-gradient(135deg, #0D47A1, #1565C0, #42A5F5);
+  color: #fff;
+  transition: all 0.4s ease;
+}
 
-    .btn-primary:hover {
-      transform: translateY(-2px) scale(1.05);
-      filter: brightness(1.15);
-    }
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.15);
+}
 
-    /* Botones secundarios (negro cromático) */
-    .btn-secondary {
-      background: linear-gradient(135deg, #222, #333, #555);
-      color: #fff;
-      transition: all 0.4s ease;
-    }
+.btn-secondary {
+  background: linear-gradient(135deg, #222, #333, #555);
+  color: #fff;
+  transition: all 0.4s ease;
+}
 
-    .btn-secondary:hover {
-      transform: translateY(-2px) scale(1.05);
-      filter: brightness(1.15);
-    }
+.btn-secondary:hover {
+  transform: translateY(-2px) scale(1.05);
+  filter: brightness(1.15);
+}
 
+/* Hero inicial oculto y desplazado */
+.hero.fade-in h2,
+.hero.fade-in p,
+.hero.fade-in .hero-buttons {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+/* Cuando entra en viewport, se hacen visibles */
+.hero.fade-in.visible h2 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.hero.fade-in.visible p {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.hero.fade-in.visible .hero-buttons {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+
+    /* SECCIONES */
     section {
       padding: 80px 40px;
       max-width: 1200px;
       margin: auto;
     }
-
     section h3 {
       font-size: 28px;
       margin-bottom: 40px;
       font-weight: 700;
     }
 
+    /* CARDS PRODUCTOS */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 30px;
     }
-
     .card {
       background: linear-gradient(180deg, #1B1B1B 0%, #222 100%);
       border-radius: 12px;
       padding: 22px;
       border: 1px solid #222;
       box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-      transition: all 0.4s ease;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+      overflow: hidden;
       opacity: 0;
       transform: translateY(20px);
     }
-
     .card.visible {
       opacity: 1;
       transform: translateY(0);
       transition: all 0.6s ease-out;
     }
-
     .card:hover {
-      transform: translateY(-5px) scale(1.02);
+      transform: translateY(-10px) scale(1.03);
       border-color: #0D47A1;
-      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.6);
     }
-
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.15), rgba(255,255,255,0));
+      transform: skewX(-25deg);
+      transition: all 0.7s ease;
+    }
+    .card:hover::after {
+      left: 125%;
+    }
     .card img {
       width: 100%;
       border-radius: 8px;
@@ -169,17 +216,14 @@
       object-fit: cover;
       transition: transform 0.4s ease, filter 0.4s ease;
     }
-
     .card img:hover {
       transform: scale(1.05);
       filter: brightness(1.1);
     }
-
     .card h4 {
       margin-bottom: 10px;
       font-weight: 500;
     }
-
     .card p {
       color: #aaa;
       font-size: 14px;
@@ -187,6 +231,63 @@
       font-weight: 400;
     }
 
+    /* TRUST ITEMS */
+    .trust {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      padding: 50px 40px 70px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .trust-item {
+      background: linear-gradient(180deg, #1A1A1A, #222);
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 28px 22px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease-out;
+    }
+    .trust-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .trust-item:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+      border-color: #1565C0;
+    }
+    .trust-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.15), rgba(255,255,255,0));
+      transform: skewX(-25deg);
+      transition: all 0.7s ease;
+    }
+    .trust-item:hover::after {
+      left: 125%;
+    }
+    .trust-item h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .trust-item p {
+      font-size: 14px;
+      color: #aaa;
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
     footer {
       padding: 40px;
       text-align: center;
@@ -195,45 +296,22 @@
       font-size: 14px;
     }
 
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .trust {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
     @media (max-width: 600px) {
       .hero h2 {
         font-size: 32px;
       }
     }
-
-    .card {
-  position: relative;
-  overflow: hidden; /* para el brillo */
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -75%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.0), rgba(255,255,255,0.15), rgba(255,255,255,0.0));
-  transform: skewX(-25deg);
-  transition: all 0.7s ease;
-}
-
-.card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.6);
-}
-
-.card:hover::after {
-  left: 125%;
-}
-
-/* Quitar el recuadro azul al hacer click/tap en móviles */
-a, button {
-  outline: none;
-  -webkit-tap-highlight-color: transparent; /* iOS y Android */
-}
-
+    @media (max-width: 500px) {
+      .trust {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -247,14 +325,15 @@ a, button {
     </nav>
   </header>
 
-  <div class="hero fade-in">
-    <h2>Impresión 3D profesional y productos listos para enviar</h2>
-    <p>Sube tu diseño, elige material y nosotros nos encargamos del resto. También descubre nuestro catálogo de piezas impresas.</p>
-    <div class="hero-buttons">
-      <a href="pedido.html" class="btn btn-primary">Pedir impresión 3D</a>
-      <a href="#catalogo" class="btn btn-secondary">Ver catálogo</a>
-    </div>
+ <div class="hero fade-in">
+  <h2>Impresión 3D profesional y productos listos para enviar</h2>
+  <p>Sube tu diseño, elige material y nosotros nos encargamos del resto. También descubre nuestro catálogo de piezas impresas.</p>
+  <div class="hero-buttons">
+    <a href="pedido.html" class="btn btn-primary">Pedir impresión 3D</a>
+    <a href="#catalogo" class="btn btn-secondary">Ver catálogo</a>
   </div>
+</div>
+
 
   <section id="catalogo" class="fade-in">
     <h3>Productos destacados</h3>
@@ -296,45 +375,81 @@ a, button {
     </div>
   </section>
 
+  <section class="trust fade-in">
+    <div class="trust-item">
+      <h4>+1500 impresiones realizadas</h4>
+      <p>Alta experiencia en proyectos funcionales y decorativos.</p>
+    </div>
+    <div class="trust-item">
+      <h4>Envíos a toda España</h4>
+      <p>Producción rápida y entrega segura.</p>
+    </div>
+    <div class="trust-item">
+      <h4>Materiales profesionales</h4>
+      <p>PLA, PETG y más según tu necesidad.</p>
+    </div>
+    <div class="trust-item">
+      <h4>Respuesta rápida</h4>
+      <p>Te damos precio y tiempos en pocas horas.</p>
+    </div>
+  </section>
+
   <footer id="contacto" class="fade-in">
     © 2025 · Impresión 3D · Contacto por WhatsApp o Email
   </footer>
 
- <script>
-  // Animaciones fade-in con stagger para las cards
-  const faders = document.querySelectorAll('.fade-in');
-  const cards = document.querySelectorAll('.card');
-  
-  const appearOptions = { threshold: 0.2 };
+  <script>
+    // FADE-IN STAGGER CARDS
+    const faders = document.querySelectorAll('.fade-in');
+    const cards = document.querySelectorAll('.card');
+    const trustItems = document.querySelectorAll('.trust-item');
 
-  // Observer para hero y secciones
-  const appearOnScroll = new IntersectionObserver(function(entries, observer) {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
-    });
-  }, appearOptions);
+    const appearOptions = { threshold: 0.2 };
 
-  faders.forEach(fader => appearOnScroll.observe(fader));
-
-  // Observer para cards con stagger
-  const staggerObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry, index) => {
-      if (!entry.isIntersecting) return;
-      setTimeout(() => {
+    // Observer general
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
         entry.target.classList.add('visible');
-      }, index * 150); // 150ms entre cada card
-      observer.unobserve(entry.target);
-    });
-  }, appearOptions);
+        observer.unobserve(entry.target);
+      });
+    }, appearOptions);
 
-  cards.forEach(card => staggerObserver.observe(card));
-</script>
+    faders.forEach(fader => appearOnScroll.observe(fader));
 
+    // Stagger para cards
+    const staggerObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry, index) => {
+        if (!entry.isIntersecting) return;
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, index * 150);
+        observer.unobserve(entry.target);
+      });
+    }, appearOptions);
+
+    cards.forEach(card => staggerObserver.observe(card));
+    trustItems.forEach(item => staggerObserver.observe(item));
+
+    // Observador para el hero
+const hero = document.querySelector('.hero');
+
+const heroObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('visible');
+    observer.unobserve(entry.target);
+  });
+}, { threshold: 0.2 });
+
+heroObserver.observe(hero);
+
+  </script>
 
 </body>
 </html>
+
+
 
 
 
