@@ -312,6 +312,91 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* RESPONSIVE MOBILE/TABLET */
+
+/* Hero */
+@media (max-width: 900px) {
+  .hero h2 {
+    font-size: 36px;
+  }
+  .hero p {
+    font-size: 16px;
+    max-width: 90%;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    gap: 15px;
+  }
+  header {
+    padding: 14px 24px;
+  }
+  nav a {
+    margin-left: 12px;
+    font-size: 13px;
+  }
+}
+
+/* Hero aún más pequeño */
+@media (max-width: 600px) {
+  .hero h2 {
+    font-size: 28px;
+  }
+  .hero p {
+    font-size: 14px;
+  }
+  .hero {
+    padding: 40px 20px;
+  }
+  .cards {
+    gap: 20px;
+  }
+}
+
+/* Cards productos */
+@media (max-width: 500px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 18px;
+  }
+  .card img {
+    height: 140px;
+  }
+}
+
+/* Trust items */
+@media (max-width: 900px) {
+  .trust {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 40px 20px 60px;
+    gap: 20px;
+  }
+  .trust-item {
+    padding: 24px 18px;
+  }
+}
+
+@media (max-width: 500px) {
+  .trust {
+    grid-template-columns: 1fr;
+    padding: 30px 15px 50px;
+    gap: 15px;
+  }
+  .trust-item {
+    padding: 20px 16px;
+  }
+}
+
+/* Footer */
+@media (max-width: 500px) {
+  footer {
+    padding: 25px 15px;
+    font-size: 13px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -448,8 +533,3 @@ heroObserver.observe(hero);
 
 </body>
 </html>
-
-
-
-
-
