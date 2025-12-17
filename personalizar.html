@@ -129,11 +129,83 @@
     box-shadow:0 10px 30px rgba(0,0,0,0.7),0 0 20px rgba(66,165,245,0.8);
   }
 
+  /* Botón atrás */
+  #backBtn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: #1565C0;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    z-index: 10000;
+  }
+
+  /* Toast arriba */
+  #toast {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #42A5F5;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 9999;
+  }
+
+  /* Ajustes para móviles */
+  @media (max-width: 480px) {
+    #backBtn {
+      padding: 8px 12px;
+      font-size: 14px;
+      top: 15px;
+      left: 10px;
+    }
+
+    #toast {
+      padding: 12px 20px;
+      font-size: 14px;
+      top: 20px;
+    }
+
+    .personalizar-container {
+      padding: 30px 20px;
+      gap: 20px;
+    }
+
+    input[type="text"], select {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    input[type="color"] {
+      width: 40px;
+      height: 30px;
+    }
+
+    .btn {
+      padding: 12px;
+      font-size: 14px;
+    }
+  }
 </style>
 </head>
 <body>
 
 <canvas id="bgCanvas"></canvas>
+
+<!-- Botón Atrás -->
+<button id="backBtn">⬅ Atrás</button>
 
 <h2>Personalizar Producto</h2>
 <div class="personalizar-container">
@@ -155,6 +227,9 @@
   </div>
   <button class="btn" id="guardar">Guardar Personalización</button>
 </div>
+
+<!-- Notificación -->
+<div id="toast">¡Configuración guardada!</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
 <script>
@@ -204,64 +279,31 @@ window.addEventListener('resize',()=>{
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// Botón Atrás
+document.getElementById('backBtn').addEventListener('click', () => {
+  history.back();
+});
 
-// Guardar personalización
+// Guardar personalización con toast
 document.getElementById('guardar').addEventListener('click',()=> {
   const color = document.getElementById('color').value;
   const texto = document.getElementById('texto').value;
   const tamaño = document.getElementById('tamaño').value;
   console.log({color,texto,tamaño});
 
-  // Mostrar notificación arriba
+  // Mostrar toast
   const toast = document.getElementById('toast');
   toast.style.opacity = '1';
   toast.style.transform = 'translateX(-50%) translateY(0)';
   
-  // Ocultar después de 2.5 segundos
+  // Ocultar después de 2.5s
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(-50%) translateY(-20px)';
   }, 2500);
 });
 </script>
-<!-- Notificación arriba -->
-<div id="toast" style="
-  position:fixed;
-  top:40px;
-  left:50%;
-  transform:translateX(-50%) translateY(-20px);
-  background:#42A5F5;
-  color:#fff;
-  padding:15px 25px;
-  border-radius:12px;
-  font-weight:600;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.5s ease, transform 0.5s ease;
-  z-index:9999;
-">¡Configuración guardada!</div>
-<button id="backBtn" style="
-  position:fixed;
-  top:20px;
-  left:20px;
-  padding:10px 15px;
-  border:none;
-  border-radius:8px;
-  background:#1565C0;
-  color:#fff;
-  font-weight:600;
-  cursor:pointer;
-  box-shadow:0 4px 10px rgba(0,0,0,0.5);
-  transition: all 0.3s ease;
-  z-index:10000;
-">⬅ Atrás</button>
-
-<script>
-// Botón para volver atrás
-document.getElementById('backBtn').addEventListener('click', () => {
-  history.back();
-});
-</script>
 
 </body>
 </html>
+
