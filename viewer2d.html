@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>STL Viewer 3D Sólido</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,11 +12,10 @@
 
 body {
   margin: 0;
-  height: 100vh;
-  background:
-    radial-gradient(circle at 30% 20%, #2a2a2a, #0b0b0b 70%);
+  min-height: 100vh;
+  background: radial-gradient(circle at 30% 20%, #2a2a2a, #0b0b0b 70%);
   color: #eaeaea;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 /* SCREENS */
@@ -32,33 +32,36 @@ body {
 /* UPLOAD */
 .upload-box {
   background: linear-gradient(180deg, #1b1b1b, #121212);
-  padding: 42px;
+  padding: 36px;
   border-radius: 22px;
-  width: 380px;
+  width: 90%;
+  max-width: 380px;
   text-align: center;
   box-shadow: 0 30px 60px rgba(0,0,0,.6);
 }
 
 .upload-box h2 {
-  margin-bottom: 22px;
+  margin-bottom: 20px;
   font-weight: 500;
+  font-size: 20px;
 }
 
 button {
   width: 100%;
-  padding: 15px;
+  padding: 16px;
   border-radius: 14px;
   border: none;
   background: linear-gradient(135deg, #1e88e5, #64b5f6);
   color: #fff;
   font-size: 16px;
   cursor: pointer;
-  transition: transform .15s ease, box-shadow .15s ease;
+  margin-top: 10px;
+  transition: background 0.2s, color 0.2s;
 }
 
-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 30px rgba(100,181,246,.5);
+button.disabled {
+  background: #555;
+  cursor: not-allowed;
 }
 
 input { display: none; }
@@ -70,33 +73,120 @@ input { display: none; }
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 canvas {
-  background:
-    radial-gradient(circle at top, #1a1a1a, #050505);
-  border-radius: 22px;
+  background: radial-gradient(circle at top, #1a1a1a, #050505);
+  border-radius: 20px;
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,.05),
     0 40px 80px rgba(0,0,0,.8);
+  max-width: 95vw;
+  max-height: 95vh;
+  touch-action: none;
 }
+
+/* NOTIFICACIÓN */
+#notification {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e88e5;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s ease;
+  z-index: 9999;
+}
+
+/* MOBILE EXTRA */
+@media (max-width: 600px) {
+  .upload-box {
+    padding: 28px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 15px;
+  }
+}
+
+/* BOTONES DEL VISOR */
+#viewerButtons {
+  position: absolute;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#viewerButtons {
+  position: absolute;
+  top: 20px;
+  left: 20px; /* alineado a la izquierda */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* separación vertical entre botones */
+}
+
+#viewerButtons button {
+  width: 150px; /* ancho fijo */
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #1e88e5, #64b5f6);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+#viewerButtons button.disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  #viewerButtons button {
+    width: 130px;
+    font-size: 15px;
+    padding: 15px;
+  }
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- NOTIFICACIÓN -->
+<div id="notification"></div>
 
 <!-- UPLOAD -->
 <div class="screen" id="upload">
   <div class="upload-box">
     <h2>Subir archivo STL</h2>
     <input type="file" id="file" accept=".stl">
-    <button onclick="file.click()">Seleccionar STL</button>
+    <button id="selectBtn" onclick="file.click()">Seleccionar STL</button>
+    <button id="viewBtn" class="hidden">Visualizar en 3D</button>
+    <button id="sendBtn" class="disabled">Enviar diseño</button>
   </div>
 </div>
 
 <!-- VIEWER -->
 <div class="screen hidden" id="viewer">
   <canvas id="canvas"></canvas>
+<div id="viewerButtons">
+    <button id="sendBtnViewer" class="disabled">Enviar diseño</button>
+    <button id="backBtnViewer">Volver</button>
+</div>
+
 </div>
 
 <script>
@@ -105,94 +195,175 @@ const upload = document.getElementById('upload');
 const viewer = document.getElementById('viewer');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const viewBtn = document.getElementById('viewBtn');
+const sendBtn = document.getElementById('sendBtn');
+const sendBtnViewer = document.getElementById('sendBtnViewer');
+const backBtnViewer = document.getElementById('backBtnViewer');
+const notification = document.getElementById('notification');
 
+let lastBuffer = null;
+
+// Función para mostrar notificación temporal
+function showNotification(msg) {
+  notification.textContent = msg;
+  notification.style.top = '20px';
+  notification.style.opacity = '1';
+  setTimeout(() => {
+    notification.style.top = '-60px';
+    notification.style.opacity = '0';
+  }, 2000);
+}
+
+// Cuando se selecciona el archivo
 file.onchange = () => {
   const r = new FileReader();
-  r.onload = e => drawSTL(e.target.result);
+  r.onload = e => {
+    lastBuffer = e.target.result;
+    viewBtn.classList.remove('hidden'); // Mostrar botón visualizar
+    sendBtn.classList.remove('disabled');
+    sendBtnViewer.classList.remove('disabled');
+    const parent = sendBtn.parentNode;
+    parent.insertBefore(sendBtn, viewBtn.nextSibling);
+  };
   r.readAsArrayBuffer(file.files[0]);
 };
 
+// Visualizar STL
+viewBtn.onclick = () => {
+  if (lastBuffer) {
+    drawSTL(lastBuffer);
+    viewBtn.classList.add('hidden');
+    sendBtnViewer.style.display = 'block';
+  }
+};
+
+// Enviar diseño
+function handleSend() {
+  if (!lastBuffer) {
+    showNotification("Añade un STL primero");
+  } else {
+    // Función enviar futura
+  }
+}
+
+sendBtn.onclick = handleSend;
+sendBtnViewer.onclick = handleSend;
+
+// Botón Volver
+backBtnViewer.onclick = () => {
+  viewer.classList.add('hidden');
+  upload.classList.remove('hidden');
+  viewBtn.classList.remove('hidden');
+};
+
+// Eventos de canvas
+window.addEventListener('resize', () => { if (lastBuffer) drawSTL(lastBuffer); });
+
+let dragging = false, lastX = 0, lastY = 0;
+canvas.addEventListener('mousedown', e => { dragging=true; lastX=e.clientX; lastY=e.clientY; });
+window.addEventListener('mouseup', () => { dragging=false; });
+window.addEventListener('mousemove', e => {
+  if (!dragging || !lastBuffer) return;
+  const dx = e.clientX - lastX;
+  const dy = e.clientY - lastY;
+  rotY += dx * ROT_SPEED;
+  rotX += dy * ROT_SPEED;
+  rotX = Math.max(-MAX_ROT_X, Math.min(MAX_ROT_X, rotX));
+  lastX = e.clientX;
+  lastY = e.clientY;
+  drawSTL(lastBuffer);
+});
+canvas.addEventListener('wheel', e => {
+  if (!lastBuffer) return;
+  e.preventDefault();
+  zoom += e.deltaY * -0.001;
+  zoom = Math.min(MAX_ZOOM, Math.max(1, zoom));
+  drawSTL(lastBuffer);
+}, { passive:false });
+
+let zoom = 1;
+const MAX_ZOOM = 3;
+let rotX = -0.5, rotY = 0.8;
+const ROT_SPEED = 0.005;
+const MAX_ROT_X = Math.PI / 2.2;
+
+// Función para dibujar STL
 function drawSTL(buffer) {
   upload.classList.add('hidden');
   viewer.classList.remove('hidden');
-
-  const size = Math.min(innerWidth, innerHeight) * 0.88;
+  const size = Math.min(innerWidth, innerHeight) * 0.9;
   canvas.width = size;
   canvas.height = size;
-
   const view = new DataView(buffer);
-  const faces = view.getUint32(80, true);
-  let o = 84;
-  const tris = [];
-
-  for (let i = 0; i < faces; i++) {
-    const nx = view.getFloat32(o, true); o+=4;
-    const ny = view.getFloat32(o, true); o+=4;
-    const nz = view.getFloat32(o, true); o+=4;
-
-    const tri = [];
-    for (let v = 0; v < 3; v++) {
-      tri.push({
-        x: view.getFloat32(o, true),
-        y: view.getFloat32(o+4, true),
-        z: view.getFloat32(o+8, true)
-      });
-      o += 12;
+  const faces = view.getUint32(80,true);
+  let o = 84, tris = [];
+  for (let i=0;i<faces;i++){
+    const nx=view.getFloat32(o,true); o+=4;
+    const ny=view.getFloat32(o,true); o+=4;
+    const nz=view.getFloat32(o,true); o+=4;
+    const tri=[];
+    for (let v=0;v<3;v++){
+      tri.push({x:view.getFloat32(o,true),y:view.getFloat32(o+4,true),z:view.getFloat32(o+8,true)});
+      o+=12;
     }
-    tris.push({ tri, normal:{x:nx,y:ny,z:nz} });
-    o += 2;
+    tris.push({tri,normal:{x:nx,y:ny,z:nz}});
+    o+=2;
   }
-
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9,minZ=1e9,maxZ=-1e9;
-  tris.forEach(t=>t.tri.forEach(p=>{
-    minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x);
-    minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y);
-    minZ=Math.min(minZ,p.z); maxZ=Math.max(maxZ,p.z);
-  }));
-
-  const scale = size*0.46/Math.max(maxX-minX,maxY-minY);
+  tris.forEach(t=>t.tri.forEach(p=>{minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); minZ=Math.min(minZ,p.z); maxZ=Math.max(maxZ,p.z);}));
+  const scale = size * 0.46 * zoom / Math.max(maxX-minX, maxY-minY);
   const depth = scale*0.65;
-
+  const light = {x:0.3,y:0.5,z:1};
   function project(p){
-    const x=p.x-(minX+maxX)/2;
-    const y=p.y-(minY+maxY)/2;
-    const z=p.z-(minZ+maxZ)/2;
-    return {
-      x:(x-y)*scale,
-      y:(x+y)*scale*0.5 - z*depth,
-      z
-    };
+    let x = p.x-(minX+maxX)/2;
+    let y = p.y-(minY+maxY)/2;
+    let z = p.z-(minZ+maxZ)/2;
+    const cx=Math.cos(rotX), sx=Math.sin(rotX);
+    let y1=y*cx-z*sx;
+    let z1=y*sx+z*cx;
+    const cy=Math.cos(rotY), sy=Math.sin(rotY);
+    let x2=x*cy+z1*sy;
+    let z2=-x*sy+z1*cy;
+    return {x:(x2-y1)*scale, y:(x2+y1)*scale*0.5 - z2*depth, z:z2};
   }
-
-  const light = { x:0.3, y:0.5, z:1 };
-
   ctx.setTransform(1,0,0,1,0,0);
   ctx.clearRect(0,0,size,size);
   ctx.translate(size/2,size/2);
-
-  tris
-    .map(t=>{
-      const pts=t.tri.map(project);
-      const avgZ=pts.reduce((s,p)=>s+p.z,0)/3;
-      const n=t.normal;
-      const dot=Math.max(0,(n.x*light.x+n.y*light.y+n.z*light.z));
-      return {pts,avgZ,shade:dot};
-    })
-    .sort((a,b)=>a.avgZ-b.avgZ)
-    .forEach(f=>{
-      ctx.beginPath();
-      f.pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-      ctx.closePath();
-
-      const base = 90 + f.shade*140;
-      ctx.fillStyle = `rgb(${base}, ${base+25}, ${base+60})`;
-      ctx.fill();
-
-      ctx.strokeStyle = 'rgba(0,0,0,0.18)';
-      ctx.lineWidth = 0.6;
-      ctx.stroke();
-    });
+  tris.map(t=>{
+    const pts=t.tri.map(project);
+    const avgZ=pts.reduce((s,p)=>s+p.z,0)/3;
+    const n=t.normal;
+    const dot=Math.max(0,n.x*light.x+n.y*light.y+n.z*light.z);
+    return {pts,avgZ,shade:dot};
+  }).sort((a,b)=>a.avgZ-b.avgZ).forEach(f=>{
+    ctx.beginPath();
+    f.pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.closePath();
+    const base=90+f.shade*140;
+    ctx.fillStyle=`rgb(${base}, ${base+25}, ${base+60})`;
+    ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.18)';
+    ctx.lineWidth=0.6;
+    ctx.stroke();
+  });
 }
+
+function handleSend() {
+  if (!lastBuffer) {
+    showNotification("Añade un STL primero");
+    return;
+  }
+
+  // Crear un blob del STL
+  const blob = new Blob([lastBuffer], { type: 'application/vnd.ms-pki.stl' });
+  const url = URL.createObjectURL(blob);
+
+const phoneNumber = "34643613245"; // tu número
+const msg = encodeURIComponent("Hola! Quiero enviarte un STL, lo adjunto aquí.");
+window.open(`https://wa.me/${phoneNumber}?text=${msg}`, "_blank");
+
+}
+
 </script>
 
 </body>
